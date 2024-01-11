@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulsanti con Emoji</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #333; /* colore del testo */
+            background: linear-gradient(45deg, #add8e6 25%, #ffffff 25%, #ffffff 50%, #add8e6 50%, #add8e6 75%, #ffffff 75%, #ffffff 100%);
+            background-size: 20px 20px; /* Dimensione dei quadrati */
+        }
+
+        .decorazione {
+            position: absolute;
+            height: 100%;
+            width: 10px;
+            background-color: #000; /* Colore delle strisce e di alcune decorazioni */
+        }
+
+        .decorazione.left {
+            left: 0;
+        }
+
+        .decorazione.right {
+            right: 0;
+        }
+
+        .decorazione.top {
+            top: 0;
+            height: 10px;
+            width: 100%;
+        }
+
+        .decorazione.bottom {
+            bottom: 0;
+            height: 10px;
+            width: 100%;
+        }
+
+        #container {
+            text-align: center;
+            z-index: 1;
+        }
+
+        #clock {
+            font-size: 200px; /* Ridimensionato */
+            margin-bottom: 20px;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        button {
+            font-size: 24px;
+            margin: 10px;
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            z-index: 1;
+        }
+
+        #serpente {
+            background-color: #66c2a5;
+        }
+
+        #pingpong {
+            background-color: #fc8d62;
+        }
+
+        #labirinto {
+            background-color: #8da0cb;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="decorazione left"></div>
+    <div class="decorazione right"></div>
+    <div class="decorazione top"></div>
+    <div class="decorazione bottom"></div>
+
+    <div id="clock"></div>
+
+    <div id="container">
+        <button id="serpente"><a href="snake.html">🐍 Serpente</a></button>
+        <button id="pingpong"><a href="pingpong.html">🏓 Ping Pong</a></button>
+        <button id="labirinto"><a href="labirinto.html">🌀 Labirinto</a></button>
+    </div>
+
+    <script>
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            // Aggiungi uno zero iniziale se i minuti o i secondi sono inferiori a 10
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            var timeString = hours + ":" + minutes + ":" + seconds;
+            document.getElementById("clock").innerHTML = timeString;
+
+            // Aggiorna ogni secondo
+            setTimeout(updateClock, 1000);
+        }
+
+        // Avvia la funzione all'avvio della pagina
+        updateClock();
+    </script>
+</body>
+</html>

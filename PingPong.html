@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    canvas {
+      border: 1px solid #000;
+    }
+
+    .stats {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas" width="500" height="660"></canvas>
+<div class="stats">
+  Punteggio : <span id="scoreSpan"></span><br>
+  Miglior punteggio : <span id="bestScoreSpan"></span><br>
+  Clicca lo spazio per iniziare<br>
+  Muoviti con:<br>
+  'Freccia sinistra' e 'Freccia destra', o con il mouse<br>
+  Restarta con 'r'.
+</div>
+
+<script type="text/javascript">
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext("2d");
+  // Raquette
+  var raqX = 215, raqHy = 10, raqBy = 635, raqWidth = 100, raqHeight = 10, speedRaq = 10;
+  // Balle
+  var ballx = 250, bally = 330, dx = 5, dy = 5, speedBalle = 20;
+  // Score
+  var score = 0, bestScore = 0;
+  // Si perdu
+  var interval = null, gameOver = "Game over !";
+  var canBegin = true;
+
+  move();
+  drawBall();
+  drawSide();
+  randomStart();
+
+  ctx.fillStyle = "#1983DE";
+  ctx.font = "24pt Arial";
+  ctx.fillText("Html5", 225, 270);
+  ctx.fillText("Canvas pong", 185, 300);
+
+  // Bord gauche et droit
+  function drawSide() {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, 660);
+    ctx.moveTo(500, 0);
+    ctx.lineTo(500, 660);
+    ctx.stroke();
+    ctx.closePath();
+  }
+
+  document.getElementById('scoreSpan').innerText = score;
+  document.getElementById('bestScoreSpan').innerText = bestScore;
+
+  function move() {
+    // Raquette haute et basse
+    ctx.fillStyle = "black";
+    ctx.fillRect(raqX, raqHy, raqWidth, raqHeight);
+    ctx.fillRect(raqX, raqBy, raqWidth, raqHeight);
+  }
+
+  function drawBall() {
+    ctx.clearRect(1, 15, 498, 630);
+    ctx.beginPath();
+    ctx.fillStyle = "purple";
+    ctx.arc(ballx, bally, 8, 0, Math.PI * 2, false);
+    ctx.fill();
+    ctx.closePath();
+    if (ballx < 8 || ballx > 492)
+      dx = -dx;
+    if ((bally < 8 || bally > 652) || ((raqX <= ballx && (raqX + 100) >= ballx) && ((raqHy + 10) === bally || raqBy === bally))) {
+      dy = -dy;
+      score++;
+      document.getElementById('scoreSpan').innerText = score;
+      speedBalle++;
+      clearInterval(interval);
+      interval = setInterval(function () { drawBall() }, 1000 / speedBalle);
+    }
+    if ((bally < 15 || bally > 650) || ((raqX > ballx && (raqX + 100) < ballx) && ((raqHy + 10) !== bally || raqBy !== bally))) {
+      clearInterval(interval);
+      if (score > bestScore) {
+        bestScore = score;
+        document.getElementById('bestScoreSpan').innerText = bestScore;
+      }
+      ctx.fillStyle = "orange";
+      ctx.font = "24pt Arial";
+      ctx.fillText(gameOver, 210, 380);
+    }
+    ballx += dx;
+    bally += dy;
+  }
+
+  function randomStart() {
+    var rdmX = Math.round(Math.random() * 2);
+    var rdmY = Math.round(Math.random() * 2);
+    if (rdmX % 2 == 0)
+      dx = -dx;
+    if (rdmY % 2 == 0)
+      dy = -dy;
+  }
+
+  function replay() {
+    clearInterval(interval);
+    raqX = 215;
+    ballx = 250; bally = 330;
+    randomStart();
+    score = 0;
+    document.getElementById('scoreSpan').innerText = score;
+    ctx.clearRect(0, 0, 500, 660);
+    move();
+    drawBall();
+    drawSide();
+    speedBalle = 20;
+    canBegin = true;
+  }
+
+  // Les touches
+  document.addEventListener("keydown", moveKey);
+
+  function moveKey(e) {
+    if (e.keyCode == "37" /* Gauche */ && raqX > 0) {
+      ctx.save();
+      ctx.clearRect(raqX, raqHy, 100, 10);
+      ctx.clearRect(raqX, raqBy, 100, 10);
+      raqX -= speedRaq;
+      move();
+    } else if (e.keyCode == "39" /* Droite */ && raqX < 400) {
+      ctx.save();
+      ctx.clearRect(raqX, raqHy, 100, 10);
+      ctx.clearRect(raqX, raqBy, 100, 10);
+      raqX += speedRaq;
+      move();
+    } else if (e.keyCode == "32" /* Space bar */ && canBegin == true) {
+      interval = setInterval(function () { drawBall() }, 1000 / 20);
+      canBegin = false;
+    } else if (e.keyCode == "82")
+      replay();
+  }
+
+  canvas.addEventListener('mousemove', moveMouse);
+
+  function moveMouse(e) {
+    var mousePos = getMousePos(canvas, e);
+    raqX = mousePos.x - (raqWidth / 2);
+    ctx.save();
+    ctx.clearRect(0, raqHy, 500, 10);
+    ctx.clearRect(0, raqBy, 500, 10);
+    move();
+  }
+
+  function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+  }
+</script>
+
+</body>
+</html>
